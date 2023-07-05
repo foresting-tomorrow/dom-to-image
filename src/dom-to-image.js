@@ -58,7 +58,7 @@
                 return cloneNode(node, options.filter, true);
             })
             .then(embedFonts)
-            .then(inlineImages)
+            .then(node => inlineImages(node, options.imgGet))
             .then(applyOptions)
             .then(function (clone) {
                 return makeSvgDataUri(clone,
@@ -319,8 +319,8 @@
             });
     }
 
-    function inlineImages(node) {
-        return images.inlineAll(node)
+    function inlineImages(node, get) {
+        return images.inlineAll(node, get)
             .then(function () {
                 return node;
             });
@@ -718,10 +718,16 @@
                 if (util.isDataUrl(element.src)) return Promise.resolve();
 
                 return Promise.resolve(element.src)
-                    .then(get || util.getAndEncode)
-                    .then(function (data) {
-                        return util.dataAsUrl(data, util.mimeType(element.src));
-                    })
+                    .then(src => get !== undefined
+                        ? get(src)
+                        : util.getAndEncode(src).then(data =>
+                            util.dataAsUrl(data, util.mimeType(element.src))
+                        )
+                    )
+                    // .then(get || util.getAndEncode)
+                    // .then(function (data) {
+                    //     return util.dataAsUrl(data, util.mimeType(element.src));
+                    // })
                     .then(function (dataUrl) {
                         return new Promise(function (resolve, reject) {
                             element.onload = resolve;
@@ -732,17 +738,17 @@
             }
         }
 
-        function inlineAll(node) {
+        function inlineAll(node, get) {
             if (!(node instanceof Element)) return Promise.resolve(node);
 
             return inlineBackground(node)
                 .then(function () {
                     if (node instanceof HTMLImageElement)
-                        return newImage(node).inline();
+                        return newImage(node).inline(get);
                     else
                         return Promise.all(
                             util.asArray(node.childNodes).map(function (child) {
-                                return inlineAll(child);
+                                return inlineAll(child, get);
                             })
                         );
                 });
