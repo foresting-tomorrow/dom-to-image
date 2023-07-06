@@ -43,7 +43,7 @@ and it will make the `domtoimage` variable available in the global scope.
 ## Usage
 
 All the top level functions accept DOM node and rendering options,
-and return promises, which are fulfilled with corresponding data URLs.  
+and return promises, which are fulfilled with corresponding data URLs.
 Get a PNG image base64-encoded data URL and display right away:
 
 ```javascript
@@ -155,15 +155,19 @@ Set to true to append the current time as a query string to URL requests to enab
 
 A data URL for a placeholder image that will be used when fetching an image fails. Defaults to undefined and will throw an error on failed images
 
+#### imgGet
+
+When using `toSvg` it is possible to set the imgGet property in the options. This property has the type `async (url: string) => string`. The function can work as a proxy to retrieve image data.
+
 ## Browsers
 
 It's tested on latest Chrome and Firefox (49 and 45 respectively at the time
 of writing), with Chrome performing  significantly better on big DOM trees,
 possibly due to it's more performant SVG support, and the fact that it supports
- `CSSStyleDeclaration.cssText` property.  
+ `CSSStyleDeclaration.cssText` property.
 
 _Internet Explorer is not (and will not be) supported, as it does not support
-SVG `<foreignObject>` tag_  
+SVG `<foreignObject>` tag_
 
 _Safari [is not supported](https://github.com/tsayen/dom-to-image/issues/27), as it uses a stricter security model on `<foreignObject`> tag. Suggested workaround is to use `toSvg` and render on the server._`
 
@@ -171,9 +175,9 @@ _Safari [is not supported](https://github.com/tsayen/dom-to-image/issues/27), as
 
 ### Source
 
-Only standard lib is currently used, but make sure your browser supports:  
+Only standard lib is currently used, but make sure your browser supports:
 
--   [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise)  
+-   [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 -   SVG `<foreignObject>` tag
 
 ### Tests
@@ -192,11 +196,11 @@ Most importantly, tests depend on:
 There might some day exist (or maybe already exists?) a simple and standard
 way of exporting parts of the HTML to image (and then this script can only
 serve as an evidence of all the hoops I had to jump through in order to get
-such obvious thing done) but I haven't found one so far.  
+such obvious thing done) but I haven't found one so far.
 
 This library uses a feature of SVG that allows having arbitrary HTML content
 inside of the `<foreignObject>` tag. So, in order to render that DOM node
-for you, following steps are taken:  
+for you, following steps are taken:
 
 1.  Clone the original DOM node recursively
 
@@ -233,17 +237,17 @@ for you, following steps are taken:
     Image element with the SVG as a source, and render it on an off-screen
     canvas, that you have also created, then read the content from the canvas
 
-8.  Done!  
+8.  Done!
 
 ## Things to watch out for
 
 -   if the DOM node you want to render includes a `<canvas>` element with
     something drawn on it, it should be handled fine, unless the canvas is
     [tainted](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image) -
-    in this case rendering will rather not succeed.  
+    in this case rendering will rather not succeed.
 
 -   at the time of writing, Firefox has a problem with some external stylesheets
-    (see issue #13). In such case, the error will be caught and logged.  
+    (see issue #13). In such case, the error will be caught and logged.
 
 ## Authors
 
